@@ -1,0 +1,145 @@
+# ── Method & run identity ─────────────────────────────────────────────────────
+# BORFEO-inspired Bayesian Optimization baseline adapted to Furhat/DAN.
+# Reference: Yang et al., "Optimizing Facial Expressions of an Android Robot
+# Effectively: a Bayesian Optimization Approach", IEEE Humanoids 2022.
+method: bayesian
+character: maurice         # Furhat texture name (e.g. yi, dorothy, james, maurice)
+emotion: happy              # angry | disgust | fear | happy | sad | surprise | neutral
+n_top: 20                  # number of best configs saved in final CSV / annotated images
+seed: 42                   # master random seed (controls init sampling and rng)
+out_dir: output_baseline_bo
+
+# ── Selected parameters (26-D, must match RL SELECTED_PARAMS in config.yaml) ─
+selected_params:
+  - MOUTH_LEFT
+  - MOUTH_DIMPLE_LEFT
+  - MOUTH_STRETCH_LEFT
+  - BROW_INNER_UP
+  - BROW_OUTER_UP_LEFT
+  - MOUTH_FROWN_LEFT
+  - MOUTH_FUNNEL
+  - MOUTH_LOWER_DOWN_LEFT
+  - MOUTH_PRESS_LEFT
+  - MOUTH_PUCKER
+  - MOUTH_ROLL_LOWER
+  - MOUTH_ROLL_UPPER
+  - MOUTH_SHRUG_LOWER
+  - MOUTH_SHRUG_UPPER
+  - MOUTH_UPPER_UP_LEFT
+  - BROW_DOWN_LEFT
+  - BROW_IN_LEFT
+  - BROW_UP_LEFT
+  - EYE_SQUINT_LEFT
+  - EYE_WIDE_LEFT
+  - EYE_BLINK_LEFT
+  - CHEEK_SQUINT_LEFT
+  - CHEEK_PUFF
+  - NOSE_SNEER_LEFT
+  - JAW_OPEN
+  - JAW_FORWARD
+
+# ── Bayesian Optimization settings ───────────────────────────────────────────
+# BORFEO paper used 100 total evaluations per emotion (Section IV-B).
+# Total = init + BO iterations. BO_TOTAL_EVALUATIONS is the budget knob UNLESS
+# BO_TIME_LIMITED (below) is true, in which case it is bypassed entirely and
+# the wall-clock budget is the only thing that stops the run -- see the
+# "Optional wall-clock budget" section further down.
+#
+# Engine: vendored bayesian-optimization==1.2.0 (fmfn/BayesianOptimization,
+# reference [30]) -- see baselines/vendor/bayes_opt_vendored.py for
+# provenance, the historical-version rationale, and the two minimal
+# numpy/scipy compatibility patches applied. GP fitting and UCB acquisition
+# maximisation are performed entirely by that package
+# (bayes_opt.BayesianOptimization.maximize), not by a project reimplementation.
+BASELINE_TYPE: bayesian
+BO_TOTAL_EVALUATIONS: 100   # total expensive Furhat+DAN evaluations (incl. init)
+BO_INIT_POINTS: 10          # random init evaluations (bayes_opt's own random_sample)
+                             # BO iterations = BO_TOTAL_EVALUATIONS - BO_INIT_POINTS
+BO_ACQUISITION: ucb          # acquisition function (only ucb is implemented/validated)
+BO_KAPPA: 2.576              # UCB exploration coefficient kappa
+                             # 2.576 = 99% normal CI; bayes_opt package default (maximize()
+                             # signature); paper does not specify an exact value
+BO_SEED: 42                  # bayes_opt.BayesianOptimization(random_state=...): seeds both
+                             # the init/candidate RandomState and the internal GP's
+                             # random_state (kernel hyperparameter MLE restarts)
+BO_OBJECTIVE: target_probability   # f(x) = DAN probability of target emotion only
+
+# ── Optional wall-clock budget (time-limited BO) ─────────────────────────────
+# If BO_TIME_LIMITED is true, BO_TOTAL_EVALUATIONS above is IGNORED as a
+# stopping condition -- it is not a ceiling in this mode. The run keeps going
+# past that count, for as long as it takes, until the wall-clock budget below
+# is exhausted. This is a stopping criterion only -- it does not change the
+# GP/UCB/acquisition behaviour or the per-evaluation objective.
+#
+# The clock starts when the BO loop itself begins (i.e. after config
+# validation, before the first evaluation) -- it does NOT include Furhat/DAN
+# environment setup time in run_bayesian.py before bayesian_bo() is called.
+# The check happens once per completed evaluation (never mid-render/mid-
+# inference), so the run can overshoot the budget by at most one evaluation's
+# wall-clock time -- typically well under a minute for this baseline.
+#
+# Example: BO_TIME_LIMITED: true with BO_TIME_LIMIT_HOURS: 12 and
+# BO_TIME_LIMIT_MINUTES: 0 runs for ~12 hours -- however many evaluations that
+# turns out to be (likely well past BO_TOTAL_EVALUATIONS=100) -- then stops.
+BO_TIME_LIMITED: True      # if true, BO_TOTAL_EVALUATIONS is bypassed; run until the time budget below elapses
+BO_TIME_LIMIT_HOURS: 12      # hours component of the wall-clock budget (only used if BO_TIME_LIMITED)
+BO_TIME_LIMIT_MINUTES: 0    # minutes component, added to the hours above
+
+# ── Per-evaluation image saving ──────────────────────────────────────────────
+# Every evaluation's config + DAN scores are ALWAYS fully logged (bo_eval_log.csv,
+# all_configs_log.csv), regardless of the settings below. Per-evaluation face-crop
+# IMAGES are a separate, optional debugging/audit-trail extra -- the BO objective
+# only ever needs the scalar DAN probability, and best_expression.jpg / the Top-N
+# images are re-rendered fresh on Furhat at the end of the run from the logged
+# configs (see run_bayesian.py), with scores taken from the log -- NOT from a
+# fresh re-classification. There is therefore no correctness dependency on saving
+# every (or any) per-eval image during the search.
+#
+# Default is OFF: saving a face crop for every evaluation is not storage-efficient
+# over a long run (~60KB/eval measured on this project -> roughly 150MB for a
+# ~2500-evaluation, 11-hour time-limited run) and the images are never used for
+# anything (top-N/best are re-rendered, not pulled from eval_images/).
+BO_SAVE_EVAL_IMAGES: false   # if true, save some per-eval face crops to eval_images/ (debugging only)
+BO_IMAGE_SAVE_EVERY: 100      # only used if BO_SAVE_EVAL_IMAGES is true: save every Nth evaluation
+
+# GP configuration note (all values are the vendored bayes_opt package's
+# hardcoded internal defaults -- NOT independently configurable through
+# BayesianOptimization.maximize()'s public API, and therefore NOT overridden
+# by this project):
+#   Kernel:               Matern(nu=2.5)
+#   alpha:                1e-6  (diagonal jitter for numerical stability)
+#   normalize_y:          True  (normalises targets; suitable for [0,1]-range values)
+#   n_restarts_optimizer: 5     (kernel hyperparameter MLE restarts)
+#   Acquisition search:   10,000 random warm-up samples + 10 L-BFGS-B restarts
+#                         (bayes_opt.util.acq_max defaults; also not exposed
+#                         through the public maximize() API)
+#   Library:              vendored bayesian-optimization==1.2.0
+#                         (baselines/vendor/bayes_opt_vendored)
+
+# ── Furhat connection ─────────────────────────────────────────────────────────
+furhat_ip: "127.0.0.1"
+furhat_texture_settle_s: 0.35
+furhat_texture_strict: true
+furhat_disable_microexpressions: true
+furhat_disable_blinking: true
+furhat_disable_head_sway: true
+furhat_reset_neutral_after_texture: true
+furhat_set_head_pose: true
+furhat_head_yaw: 0.0
+furhat_head_pitch: 0.0
+furhat_head_roll: 0.0
+
+# ── Classifier ────────────────────────────────────────────────────────────────
+classifier_type: dan
+fer_model_path: "DAN/models/affecnet7_epoch6_acc0.6569.pth"
+template_path: ""   # empty = auto-select (Maurice template for Maurice, standard otherwise)
+capture_from_monitor: false
+dan_detect_face: true
+dan_if_no_face: fail
+# dan_preset: affectnet7   # uncomment to force DAN label preset
+
+# ── Reward flags (must both be false for BO -- objective is raw target prob) ──
+# The BO objective is f(x) = DAN_probs[target_emotion_index], not any gap reward.
+gap_based_reward: false
+weighted_gap_based_reward: false
+weighted_gap_alpha: 0.50   # unused when both gap flags are false

@@ -1,0 +1,67 @@
+# ── Method & run identity ─────────────────────────────────────────────────────
+method: uniform       # uniform (random search)
+character: maurice         # Furhat texture name (e.g. yi, dorothy, james)
+emotion: fear        # angry | disgust | fear | happy | sad | surprise | neutral
+budget: 100000        # total render+classify calls
+n_top: 20             # number of best configs to save
+seed: 42
+out_dir: output_baseline
+
+# ── Selected parameters (26-D, matches RL SELECTED_PARAMS) ───────────────────
+selected_params:
+  - MOUTH_LEFT
+  - MOUTH_DIMPLE_LEFT
+  - MOUTH_STRETCH_LEFT
+  - BROW_INNER_UP
+  - BROW_OUTER_UP_LEFT
+  - MOUTH_FROWN_LEFT
+  - MOUTH_FUNNEL
+  - MOUTH_LOWER_DOWN_LEFT
+  - MOUTH_PRESS_LEFT
+  - MOUTH_PUCKER
+  - MOUTH_ROLL_LOWER
+  - MOUTH_ROLL_UPPER
+  - MOUTH_SHRUG_LOWER
+  - MOUTH_SHRUG_UPPER
+  - MOUTH_UPPER_UP_LEFT
+  - BROW_DOWN_LEFT
+  - BROW_IN_LEFT
+  - BROW_UP_LEFT
+  - EYE_SQUINT_LEFT
+  - EYE_WIDE_LEFT
+  - EYE_BLINK_LEFT
+  - CHEEK_SQUINT_LEFT
+  - CHEEK_PUFF
+  - NOSE_SNEER_LEFT
+  - JAW_OPEN
+  - JAW_FORWARD
+
+# ── Furhat connection ─────────────────────────────────────────────────────────
+furhat_ip: "127.0.0.1"
+furhat_texture_settle_s: 0.35
+furhat_texture_strict: true
+furhat_disable_microexpressions: true
+furhat_disable_blinking: true
+furhat_disable_head_sway: true
+furhat_reset_neutral_after_texture: true
+furhat_set_head_pose: true
+furhat_head_yaw: 0.0
+furhat_head_pitch: 0.0
+furhat_head_roll: 0.0
+
+# ── Classifier ────────────────────────────────────────────────────────────────
+classifier_type: dan
+fer_model_path: "DAN/models/affecnet7_epoch6_acc0.6569.pth"
+template_path: ""   # leave empty to auto-select (Maurice template for Maurice, standard otherwise)
+capture_from_monitor: false
+dan_detect_face: true
+dan_if_no_face: fail
+dan_image_save_every: 1   # 1 = save image on every render call (needed for top-N; RL default is 10)
+# dan_preset: affectnet7               # uncomment to force DAN label preset
+
+# ── Reward ───────────────────────────────────────────────────────────────────
+# Baselines use raw target-emotion probability as reward (reward = p_target).
+# Both gap flags must be false to reach that branch in FurhatEnv._compute_emotion_reward.
+gap_based_reward: false
+weighted_gap_based_reward: false
+weighted_gap_alpha: 0.50   # unused when both gap flags are false
