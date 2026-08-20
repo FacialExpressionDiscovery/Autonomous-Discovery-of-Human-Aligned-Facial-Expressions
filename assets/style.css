@@ -178,6 +178,10 @@ h2.section-title {
   border-radius: 4px;
 }
 
+#companion-video .video-frame video::cue {
+  font-size: 1.1em;
+}
+
 .video-caption {
   margin-top: 10px;
   font-size: 0.92rem;
