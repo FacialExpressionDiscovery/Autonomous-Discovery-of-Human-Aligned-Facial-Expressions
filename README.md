@@ -126,24 +126,3 @@ pytest tests/
 ```
 Covers the Bayesian Optimization baseline end-to-end with all hardware
 (Furhat, DAN) mocked — no simulator or GPU required.
-
-## Project page
-
-`index.html` (with `assets/` and `supplementary_videos/`) is a static,
-dependency-free project page: an overview of the method, the companion video,
-and the two silent expression-performance demos, each with `.vtt` captions.
-
-To view it locally, just open `index.html` in a browser — no build step.
-
-To host it with **GitHub Pages** once this repository is pushed:
-
-1. Push this folder as the repository root (the `index.html` at the top level
-   is what Pages will serve).
-2. In the repository, go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-4. Pick the branch (e.g. `main`) and folder **`/ (root)`**, then **Save**.
-5. GitHub publishes the page at `https://<account>.github.io/<repo>/` within
-   a few minutes (the exact URL is shown on the same Settings → Pages screen).
-
-A `.nojekyll` file is included so GitHub Pages serves the site as-is,
-without running it through Jekyll.
