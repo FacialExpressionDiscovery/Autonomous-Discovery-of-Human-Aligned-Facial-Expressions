@@ -1,0 +1,29 @@
+# Core
+numpy
+scipy
+scikit-learn
+joblib
+pandas
+PyYAML
+matplotlib
+tqdm
+Pillow
+opencv-python
+
+# Deep learning (DAN classifier / REINFORCE policy network)
+torch
+torchvision
+
+# Screen capture (face crop from the Furhat simulator window)
+pyautogui
+mss
+
+# Furhat robot / simulator control
+furhat-remote-api
+# Optional: only needed for FURHAT_SET_HEAD_POSE / idle-behavior control
+# (FURHAT_DISABLE_* / FURHAT_SET_HEAD_POSE in config.yaml). The code degrades
+# gracefully (prints a warning, continues) if this package is not installed.
+# furhat-realtime-api
+
+# Tests
+pytest

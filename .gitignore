@@ -1,0 +1,24 @@
+# Training outputs
+output_REINFORCE/
+output_baseline/
+output_baseline_bo/
+
+# DAN model checkpoints (too large for GitHub; download separately)
+DAN/models/*.pth
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.pdf
+
+# Claude Code
+.claude/
+
+# Common IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

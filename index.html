@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autonomous Discovery of Human-Aligned Facial Expressions</title>
+<meta name="description" content="An RL agent that discovers pools of recognizable facial expressions on a Furhat social robot, scored by a human-trained facial expression recognizer, and validated in an in-person user study.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 class="title">Autonomous Discovery of Human-Aligned Facial Expressions on Social Robots Using Reinforcement Learning</h1>
+    <p class="byline"><span class="note">Authors and affiliations withheld for anonymous review</span></p>
+    <p class="venue-note">Supplementary project page — code, companion video, and expression demos</p>
+    <div class="links">
+      <a class="btn primary" href="README.md">Code &amp; Setup Guide</a>
+      <a class="btn" href="#companion-video">Companion Video</a>
+      <a class="btn" href="#performance-videos">Expression Demos</a>
+      <span class="btn disabled">Paper (link withheld for review)</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="overview">
+    <div class="notice">
+      This page and the linked repository are prepared for anonymous review. Author names, affiliations, and any
+      identifying links have been withheld from the code, configs, and this page.
+    </div>
+  </section>
+
+  <section id="abstract">
+    <h2 class="section-title">Overview</h2>
+    <p class="lede">
+      On many robot platforms, facial expressions are still manually authored as a small set of fixed presets:
+      a designer hand-tunes parameters until the robot has one face per emotion. We replace this manual design
+      process with automatic expression <em>discovery</em>. An RL agent explores a Furhat robot's facial
+      action-unit controls directly, rendering each candidate configuration on the robot and scoring it with a
+      facial expression recognizer trained on human faces. Over many trials, this feedback shapes the agent
+      toward expressions that are more recognizable to humans &mdash; not toward a single preset, but toward a
+      <strong>pool of diverse, valid candidate expressions per emotion</strong>. We evaluate the discovered
+      expressions with a physical Furhat robot in an in-person user study, where participants judged them for
+      recognizability, diversity, naturalness, and emotional intensity.
+    </p>
+  </section>
+
+  <section id="companion-video">
+    <h2 class="section-title">Companion Video</h2>
+    <p class="lede">A narrated overview of the motivation, method, and results.</p>
+    <div class="video-frame">
+      <video controls preload="metadata" poster="assets/posters/companion_video.jpg">
+        <source src="supplementary_videos/companion_video.mp4" type="video/mp4">
+        <track kind="captions" src="supplementary_videos/companion_video.vtt" srclang="en" label="English" default>
+        Your browser does not support embedded video. You can
+        <a href="supplementary_videos/companion_video.mp4">download the video</a> instead.
+      </video>
+    </div>
+  </section>
+
+  <section id="performance-videos">
+    <h2 class="section-title">Expressions, Performed Dynamically</h2>
+    <p class="lede">
+      Discovered expressions are not just static end-states &mdash; they can be performed as smooth, continuous
+      transitions on the robot rather than abrupt jumps between poses. The two silent clips below show the
+      Maurice and Vinnie Furhat characters dynamically performing a discovered expression, from neutral to peak.
+    </p>
+    <div class="video-grid">
+      <div class="video-card">
+        <span class="tag">No audio</span>
+        <h3>Maurice</h3>
+        <div class="video-frame">
+          <video controls preload="metadata" poster="assets/posters/maurice_perform.jpg">
+            <source src="supplementary_videos/Maurice_Perform.mp4" type="video/mp4">
+            <track kind="captions" src="supplementary_videos/Maurice_Perform.vtt" srclang="en" label="English">
+            Your browser does not support embedded video. You can
+            <a href="supplementary_videos/Maurice_Perform.mp4">download the video</a> instead.
+          </video>
+        </div>
+        <p class="video-caption">Maurice performing a discovered expression dynamically.</p>
+      </div>
+      <div class="video-card">
+        <span class="tag">No audio</span>
+        <h3>Vinnie</h3>
+        <div class="video-frame">
+          <video controls preload="metadata" poster="assets/posters/vinnie_perform.jpg">
+            <source src="supplementary_videos/Vinnie_Perform.mp4" type="video/mp4">
+            <track kind="captions" src="supplementary_videos/Vinnie_Perform.vtt" srclang="en" label="English">
+            Your browser does not support embedded video. You can
+            <a href="supplementary_videos/Vinnie_Perform.mp4">download the video</a> instead.
+          </video>
+        </div>
+        <p class="video-caption">Vinnie performing a discovered expression dynamically.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="code">
+    <h2 class="section-title">Code &amp; Usage</h2>
+    <p class="lede">
+      This repository contains the full implementation: the REINFORCE/Actor-Critic trainer, the DAN-based
+      facial expression classifier, and both baseline search methods, along with the Furhat-simulator setup
+      needed to reproduce a run.
+    </p>
+    <pre class="code-block"><code><span class="comment"># install dependencies</span>
+pip install -r requirements.txt
+
+<span class="comment"># RL policy gradient training (edit config.yaml first)</span>
+python policy_gradient_agent.py --config config.yaml
+
+<span class="comment"># Random search baseline (edit baselines/config_baseline.yaml first)</span>
+python baselines/run_baseline.py
+
+<span class="comment"># Bayesian Optimization baseline (edit baselines/config_bayesian.yaml first)</span>
+python baselines/run_bayesian.py</code></pre>
+    <p class="lede" style="margin-top:18px;">
+      See <a href="README.md">README.md</a> for the full setup guide, including the dual-monitor
+      Furhat-simulator-plus-editor workflow the screen-capture classifier relies on.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  Project page and supplementary materials prepared for anonymous review.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+# here what training needs
+SELECTED_PARAMS:
+  - MOUTH_LEFT
+  - MOUTH_DIMPLE_LEFT
+  - MOUTH_STRETCH_LEFT
+  - BROW_INNER_UP
+  - BROW_OUTER_UP_LEFT
+  - MOUTH_FROWN_LEFT
+  - MOUTH_FUNNEL
+  - MOUTH_LOWER_DOWN_LEFT
+  - MOUTH_PRESS_LEFT
+  - MOUTH_PUCKER
+  - MOUTH_ROLL_LOWER
+  - MOUTH_ROLL_UPPER
+  - MOUTH_SHRUG_LOWER
+  - MOUTH_SHRUG_UPPER
+  - MOUTH_UPPER_UP_LEFT
+  - BROW_DOWN_LEFT
+  - BROW_IN_LEFT
+  - BROW_UP_LEFT
+  - EYE_SQUINT_LEFT
+  - EYE_WIDE_LEFT
+  - EYE_BLINK_LEFT
+  - CHEEK_SQUINT_LEFT
+  - CHEEK_PUFF
+  - NOSE_SNEER_LEFT
+  - JAW_OPEN
+  - JAW_FORWARD
+
+BIN_SIZE: 0.25
+MAX_STEPS_PER_EPISODE: 101
+EPISODES: 1000
+GAMMA: 0.99
+ALPHA: 0.01
+EPSILON: 0.2
+LR: 1e-3
+DESIGNATED_EMOTION: "happy"   # int 0..6 or name (angry/disgust/fear/happy/sad/surprise/neutral)
+GAP_BASED_REWARD: true     # true: reward = top1-top2 only when designated emotion is top1, else 0
+WEIGHTED_GAP_BASED_REWARD: true  # true: overrides GAP_BASED_REWARD; r=(1-a)*pt + a*max(0,m)
+WEIGHTED_GAP_ALPHA: 0.50         # manual alpha in [0,1] used when WEIGHTED_GAP_BASED_REWARD=true
+HAPPY_INDEX: 3          # deprecated alias (kept for backward compatibility)
+# DAN example:
+FER_MODEL_PATH: "DAN/models/affecnet7_epoch6_acc0.6569.pth"
+FURHAT_IP: "127.0.0.1"  # Change to your Furhat's IP address
+FURHAT_TEXTURE: "maurice"  # e.g., dorothy, alex, james
+FURHAT_TEXTURE_SETTLE_S: 0.35
+FURHAT_TEXTURE_STRICT: true
+# Idle behavior control via Furhat Realtime API (requires furhat_realtime_api package)
+# Disable these to get a clean, stable face during training/evaluation.
+# Fix: idle config is applied AFTER texture switch + settle + full-neutral reset,
+# so the texture change never undoes the disable.
+FURHAT_DISABLE_MICROEXPRESSIONS: true
+FURHAT_DISABLE_BLINKING: true
+FURHAT_DISABLE_HEAD_SWAY: true
+# Send a full-neutral gesture after texture switch before disabling idle.
+# Prevents texture-transition animation state from being "frozen" on the face.
+FURHAT_RESET_NEUTRAL_AFTER_TEXTURE: true
+# Head pose (requires furhat_realtime_api). Set FURHAT_SET_HEAD_POSE: true to apply.
+# yaw=0, pitch=0, roll=0 points the head straight forward.
+FURHAT_SET_HEAD_POSE: true
+FURHAT_HEAD_YAW: 0.0
+FURHAT_HEAD_PITCH: 0.0
+FURHAT_HEAD_ROLL: 0.0
+CLASSIFIER_TYPE: "dan"
+CLASSIFIER_MODULE: ""    # optional override; leave empty to use CLASSIFIER_TYPE registry
+CLASSIFIER_CLASS: ""     # optional override; leave empty to use CLASSIFIER_TYPE registry
+# Optional: force DAN label preset (auto-inferred from checkpoint name otherwise)
+# DAN_PRESET: "affectnet7"   # one of: affectnet7 | affectnet8 | rafdb7
+# DAN/demo.py-aligned preprocessing controls (keep consistent across human + Furhat evals)
+DAN_DETECT_FACE: True
+DAN_IF_NO_FACE: "fail"   # "fail" (demo.py) or "full_image"
+DAN_IMAGE_SAVE_EVERY: 10  # save face crop every N classifier calls (1=every call; 10=default for training)
+CAPTURE_FROM_MONITOR: False
+
+USE_EPISODE_EXPL: true
+EP_EXPL_PROB_START: 1.0     # p(exploration episode) at episode 1
+EP_EXPL_PROB_END: 0.001     # p(exploration episode) at last episode of the schedule
+EP_EXPL_DECAY_EPISODES: 1000 # linear decay horizon in episodes
+
+# --- Intra-episode step epsilon schedule ---
+STEP_EPS_START: 0.90        # epsilon at step 0 inside an exploration episode
+STEP_EPS_END: 0.05
+
+# ---- Checkpoint I/O and modes ----
+RUN_MODE: "train"            # one of: "train" | "eval" | "train_and_eval"
+RESUME_FROM_PATH: ""         # path to an existing policy.pt to load before run (empty = ignore)
+
+# ---- Evaluation settings ----
+EVAL_EPISODES: 10
+EVAL_MAX_STEPS_PER_EPISODE: 101   # defaults to MAX_STEPS_PER_EPISODE if omitted
+EVAL_GREEDY: true                 # true: argmax; false: sample from policy (still no epsilon)
+EVAL_OUTPUT_SUBDIR: "eval"        # results under output_REINFORCE/<jobid>/<this_subdir>
+
+# ---- Post-training top-episode evaluation ----
+EVAL_TOP_EPISODES: true
+EVAL_TOP_K: 20
+EVAL_TOP_OUTPUT_SUBDIR: "evaluation"
+EVAL_TOP_BEST_IMAGES_SUBDIR: "best_images_sorted"
+EVAL_TOP_MAX_STEPS_PER_EPISODE: 101
+EVAL_TOP_GREEDY: true
+
+# Clip peak trajectory
+CLIP_PEAK_TRAJECTORY: True
+# Return shaping
+RETURN_MODE: "blend"     # one of: "terminal" | "immediate" | "blend"
+# Weights used when RETURN_MODE (or CRITIC_TARGET_MODE) is "blend":
+# target = BLEND_TERMINAL_WEIGHT * discounted_final_reward + BLEND_IMMEDIATE_WEIGHT * immediate_reward
+BLEND_TERMINAL_WEIGHT: 0.50
+BLEND_IMMEDIATE_WEIGHT: 0.50
+
+USE_ACTOR_CRITIC: True
+CRITIC_HIDDEN: 128
+CRITIC_LR: 0.0005
+CRITIC_LOSS_COEF: 0.5
+# Critic replay buffer (for value function)
+USE_CRITIC_REPLAY: true         # if false -> episode-only training
+CRITIC_BUFFER_CAPACITY: 50000   # total (s, G_t) pairs to keep
+CRITIC_BATCH_SIZE: 256          # batch size for critic updates from buffer
+CRITIC_UPDATES_PER_EP: 4        # how many batches per episode
+
+# ----- Critic training data -----
+CRITIC_USE_FULL_TRAJ: true        # true -> critic sees full traj, actor still uses clipped
+CRITIC_TARGET_MODE: "reward"      # "reward" | "return" | "blend"
+
+# ---------- Plot axis locks ----------
+EMOTION_PLOT_YLIM: [0.0, 1.0]
+
+# ---------- Plot frequencies ----------
+PLOT_FINAL_METRICS_EVERY: 100
+PLOT_LOSS_EVERY: 10
+
+# ---------- Cutoff trajectory ----------
+# Only used if CLIP_PEAK_TRAJECTORY: true
+# Options: "reward", "happiness"
+CUTOFF_TRAJECTORY_MODE: "reward"
+
+# Optional
+EMOTION_DIM: 7
+DEVICE: cpu
+SEED: 42
