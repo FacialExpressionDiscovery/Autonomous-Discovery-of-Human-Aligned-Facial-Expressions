@@ -1,0 +1,104 @@
+WEBVTT
+
+00:00.000 --> 00:06.000
+Autonomous discovery of human-aligned facial expressions on social robots using reinforcement learning.
+
+00:06.000 --> 00:12.000
+On many robot platforms, expressions are still manually authored as fixed presets.
+
+00:12.000 --> 00:18.000
+Designers tune parameters by hand, usually ending with only a small set of rigid expressions.
+
+00:18.000 --> 00:22.000
+We replace fixed preset design with automatic expression discovery.
+
+00:22.000 --> 00:26.000
+Our system explores the robot's facial controls and produces expression pools.
+
+00:26.000 --> 00:32.000
+Multiple candidate expressions for the same emotion, instead of one handcrafted face.
+
+00:32.000 --> 00:37.000
+We begin with four different Furhat characters, each starting from a neutral face.
+
+00:37.000 --> 00:44.000
+The goal is not to manually design one expression, but to let the system discover expressive alternatives for each character.
+
+00:44.000 --> 00:47.000
+The agent explores how each face can change.
+
+00:47.000 --> 00:55.000
+Instead of relying on fixed handcrafted presets, it searches through the robot's facial controls to discover expressions that better match a target emotion.
+
+00:56.000 --> 01:01.000
+Each explored configuration is rendered on Furhat as a visible facial expression.
+
+01:01.000 --> 01:05.000
+This gives the system a concrete candidate face that can be evaluated.
+
+01:05.000 --> 01:10.000
+The rendered face is then passed to an emotion recognizer trained on human facial expressions.
+
+01:10.000 --> 01:14.000
+It estimates which emotion the face most strongly conveys.
+
+01:14.000 --> 01:19.000
+Clearer expressions receive higher scores, while ambiguous faces are discouraged.
+
+01:19.000 --> 01:24.000
+Over many trials, this feedback guides the system toward more recognizable robot expressions.
+
+01:24.000 --> 01:27.000
+After training, the result is not a single fixed preset.
+
+01:27.000 --> 01:36.000
+For each character, the system discovers a pool of candidate expressions, giving multiple ways to express the same emotion with different visual styles and intensities.
+
+01:36.000 --> 01:42.000
+This is Vinnie's best fear episode, shown from the neutral starting face to the best scoring step.
+
+01:42.000 --> 01:50.000
+The progression shows how the expression develops gradually during training, ending at the strongest fear configuration found in that episode.
+
+01:51.000 --> 01:54.000
+This second example shows Maurice's best anger episode.
+
+01:54.000 --> 02:02.000
+The video begins at the neutral face and ends at the best scoring angry expression, showing the path the system followed before reaching its strongest result.
+
+02:04.000 --> 02:09.000
+This slide shows that the learned output is not limited to a single expression per emotion.
+
+02:09.000 --> 02:15.000
+For each row, the leftmost image is the neutral Furhat expression, and the remaining images are learned candidates.
+
+02:16.000 --> 02:23.000
+Even within the same emotion, such as happiness or sadness, the system discovers multiple visually different expressions.
+
+02:24.000 --> 02:27.000
+The same pattern appears for other emotions as well.
+
+02:27.000 --> 02:33.000
+The neutral expression on the left, our method discovers several different candidate expressions for fear and disgust.
+
+02:33.000 --> 02:40.000
+This shows that the learned expression pool captures diversity within the same emotion, instead of collapsing to one preset.
+
+02:41.000 --> 02:44.000
+We evaluated the learned expressions in an in-person user study.
+
+02:44.000 --> 02:51.000
+Participants interacted with the physical Furhat robot and judged whether the generated expressions conveyed the intended emotion.
+
+02:51.000 --> 03:00.000
+In the recognition task, participants watched the robot perform an expression, selected one of six emotions, and rated their confidence in that choice.
+
+03:00.000 --> 03:07.000
+This allowed us to test whether the expressions were readable to humans, not only whether they received high scores from the classifier.
+
+03:07.000 --> 03:16.000
+Participants also ranked expression candidates by intensity and naturalness, letting us evaluate the full expression pool beyond simple emotion recognition.
+
+03:16.000 --> 03:22.000
+Overall, the learned expressions were perceived as recognizable, diverse, natural, and emotionally intense.
+
