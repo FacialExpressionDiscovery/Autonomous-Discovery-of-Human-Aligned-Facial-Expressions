@@ -101,14 +101,14 @@
   <section id="code">
     <h2 class="section-title">Code &amp; Usage</h2>
     <p class="lede">
-      This repository contains the full implementation: the REINFORCE/Actor-Critic trainer, the DAN-based
+      This repository contains the full implementation: the Actor-Critic trainer, the DAN-based
       facial expression classifier, and both baseline search methods, along with the Furhat-simulator setup
       needed to reproduce a run.
     </p>
     <pre class="code-block"><code><span class="comment"># install dependencies</span>
 pip install -r requirements.txt
 
-<span class="comment"># RL policy gradient training (edit config.yaml first)</span>
+<span class="comment"># Actor-Critic training (edit config.yaml first)</span>
 python policy_gradient_agent.py --config config.yaml
 
 <span class="comment"># Random search baseline (edit baselines/config_baseline.yaml first)</span>
