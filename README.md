@@ -21,7 +21,7 @@ Furhat face):
 
 ```
 config.yaml                    # Actor-Critic training config
-policy_gradient_agent.py       # REINFORCE entry point (backward-compatible shim)
+policy_gradient_agent.py       # Actor-Critic entry point (backward-compatible shim)
 policy_gradient/               # Actor-Critic trainer, env, models
 dan_classifier.py              # FER classifier: screen-captures the Furhat face, runs DAN
 DAN/                           # Distract Your Attention Network (FER backbone)
@@ -94,7 +94,7 @@ use `furhat-realtime-api` if installed, and are skipped gracefully otherwise.
 ## Running
 
 All three entry points read a YAML config next to them — no CLI flags needed
-beyond an optional `--config` for the REINFORCE runner.
+beyond an optional `--config` for the Actor-Critic runner.
 
 **Actor-Critic** (edit `config.yaml`, then):
 ```
