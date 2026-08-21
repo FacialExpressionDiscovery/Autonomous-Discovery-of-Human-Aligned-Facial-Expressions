@@ -13,16 +13,16 @@ Three interchangeable search strategies are provided, all optimizing the same
 objective (a DAN classifier's probability of a target emotion on the rendered
 Furhat face):
 
-- **REINFORCE / Actor-Critic policy gradient** (`policy_gradient/`) — the main RL approach.
+- **Actor-Critic policy gradient** (`policy_gradient/`) — the main RL approach.
 - **Random search** (`baselines/run_baseline.py`) — samples the 26-D action-unit vector uniformly at random.
 - **Bayesian Optimization** (`baselines/run_bayesian.py`) — a Gaussian-process/UCB baseline built on a vendored copy of [`bayesian-optimization`](https://github.com/fmfn/BayesianOptimization) (see `baselines/vendor/`).
 
 ## Repository layout
 
 ```
-config.yaml                    # REINFORCE training config
+config.yaml                    # Actor-Critic training config
 policy_gradient_agent.py       # REINFORCE entry point (backward-compatible shim)
-policy_gradient/               # REINFORCE/Actor-Critic trainer, env, models
+policy_gradient/               # Actor-Critic trainer, env, models
 dan_classifier.py              # FER classifier: screen-captures the Furhat face, runs DAN
 DAN/                           # Distract Your Attention Network (FER backbone)
 baselines/
@@ -96,7 +96,7 @@ use `furhat-realtime-api` if installed, and are skipped gracefully otherwise.
 All three entry points read a YAML config next to them — no CLI flags needed
 beyond an optional `--config` for the REINFORCE runner.
 
-**REINFORCE / Actor-Critic** (edit `config.yaml`, then):
+**Actor-Critic** (edit `config.yaml`, then):
 ```
 python policy_gradient_agent.py --config config.yaml
 ```
